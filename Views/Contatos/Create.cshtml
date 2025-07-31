@@ -1,0 +1,105 @@
+﻿@model AgendaCEP.Models.Contato
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title h3 mb-3 text-primary">Criar um novo</h1>
+                    <h4 class="card-subtitle mb-4 text-secondary">Contato</h4>
+                    <hr />
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+                        <div class="mb-3">
+                            <label asp-for="Nome" class="form-label"></label>
+                            <input asp-for="Nome" class="form-control" />
+                            <span asp-validation-for="Nome" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Telefone" class="form-label"></label>
+                            <input asp-for="Telefone" class="form-control" />
+                            <span asp-validation-for="Telefone" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="CEP" class="form-label"></label>
+                            <input asp-for="CEP" class="form-control" id="CEP" />
+                            <span asp-validation-for="CEP" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Rua" class="form-label"></label>
+                            <input asp-for="Rua" class="form-control" id="Rua" />
+                            <span asp-validation-for="Rua" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Bairro" class="form-label"></label>
+                            <input asp-for="Bairro" class="form-control" id="Bairro" />
+                            <span asp-validation-for="Bairro" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Cidade" class="form-label"></label>
+                            <input asp-for="Cidade" class="form-control" id="Cidade" />
+                            <span asp-validation-for="Cidade" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Estado" class="form-label"></label>
+                            <input asp-for="Estado" class="form-control" id="Estado" />
+                            <span asp-validation-for="Estado" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Numero" class="form-label"></label>
+                            <input asp-for="Numero" class="form-control" />
+                            <span asp-validation-for="Numero" class="text-danger small"></span>
+                        </div>
+                        <div class="d-grid">
+                            <input type="submit" value="Criar" class="btn btn-primary btn-lg" />
+                        </div>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <a asp-action="Index" class="btn btn-link text-decoration-none">Voltar para lista</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById("CEP").addEventListener('blur', function () {
+            const cep = this.value.replace(/\D/g, "");
+
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.erro) {
+                            alert("CEP não encontrado.");
+                        } else {
+                            document.getElementById("Rua").value = data.logradouro;
+                            document.getElementById("Bairro").value = data.bairro;
+                            document.getElementById("Cidade").value = data.localidade;
+                            document.getElementById("Estado").value = data.uf;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erro ao buscar CEP:", error);
+                        alert("Erro ao buscar CEP. Verifique a conexão com a internet.");
+                    });
+            } else {
+                alert("CEP inválido. Digite 8 números.");
+            }
+        });
+    </script>
+}
